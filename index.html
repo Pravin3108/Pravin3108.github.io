@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pravin Resume</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+        }
+        #pdf-viewer {
+            width: 100%;
+            height: 100vh;
+            overflow: auto;
+        }
+        canvas {
+            display: block;
+            margin: auto;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Pravin Resume</h1>
+    <div id="pdf-viewer"></div>
+
+    <!-- Include PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        // Path to the PDF file
+        const pdfPath = './Pravin-Resume.pdf';
+
+        // Initialize PDF.js
+        const pdfViewer = document.getElementById('pdf-viewer');
+        const loadingTask = pdfjsLib.getDocument(pdfPath);
+
+        loadingTask.promise.then(pdf => {
+            // Loop through all the pages of the PDF
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                pdf.getPage(pageNum).then(page => {
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    pdfViewer.appendChild(canvas);
+
+                    page.render({ canvasContext: context, viewport }).promise.then(() => {
+                        console.log(`Page ${pageNum} rendered`);
+                    });
+                });
+            }
+        }).catch(error => {
+            console.error('Error loading PDF:', error);
+            pdfViewer.innerHTML = '<p style="text-align: center; color: red;">Failed to load the PDF.</p>';
+        });
+    </script>
+</body>
+</html>
